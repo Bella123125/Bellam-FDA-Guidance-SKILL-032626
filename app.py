@@ -1715,27 +1715,3 @@ st.markdown(
     "</div>",
     unsafe_allow_html=True,
 )
-```
-
-## Follow-up Questions (20)
-
-1. Do you want the “exactly 5 tables” constraint to treat **any** pipe table as a table (current behavior), or should we also detect HTML tables and count them too (to prevent accidental extra tables)?
-2. For “exactly 20 entities,” should entities be required to follow a **strict schema block** (e.g., a repeated mini-template per entity), or is the current “- **Entity #N** … fields …” format sufficient?
-3. Should Output A and Output B include a machine-readable **JSON appendix** (in a fenced code block) containing entities and table metadata for downstream automation, while still keeping the primary document in Markdown?
-4. Should the app implement an optional “**format-hardening pass**” that only fixes table/entity counts and section headers without changing substantive content?
-5. Do you want to enforce the word count more strictly via a **regeneration loop** (automatic retries up to N times), or keep it fully manual and user-driven as currently implemented?
-6. For CJK-heavy outputs, do you prefer replacing word bands with a **character-count band** to reduce ambiguity and false warnings?
-7. Should the Template Outline step be **mandatory** before Step B (blocking), or optional (allow Step B with the raw template text)?
-8. When users paste a template, should the app attempt to preserve its **exact heading wording and order**, or is a semantically similar outline acceptable?
-9. Do you want a “**diff viewer**” showing raw vs edited effective outputs for A/B/SKILL.md to improve traceability and audit readiness?
-10. Should the app provide a “**Run Bundle export**” (ZIP of artifacts + prompts + logs) for archival, while still being user-initiated and session-local?
-11. Should the Live Log include token/cost estimates using a configurable pricing table, or should it remain tokens-only/latency-only to avoid cost inaccuracies?
-12. For Grok/xAI compatibility, should the endpoint be configurable (some deployments use OpenAI-compatible proxies), rather than fixed to `https://api.x.ai/v1/chat/completions`?
-13. For Anthropic, do you need support for **prompt caching** headers or a configurable `anthropic-version` to match your account requirements?
-14. Do you want a provider failover policy (e.g., retry once with an alternate model/provider) or keep provider switching strictly manual for compliance transparency?
-15. Should the app add a “**secret scanner**” that warns users if pasted content appears to contain API keys or credentials before sending it to any LLM provider?
-16. Do you want separate model defaults per step (A vs Template vs B vs Skill.md) rather than inheriting from global defaults each time?
-17. Should the Note Keeper keyword highlighting use HTML spans (current) or a more portable Markdown-only approach (e.g., **bold + coral via CSS class**) for maximum compatibility?
-18. Do you want additional built-in agents in Agent Studio specifically for 510(k) workflows (e.g., “deficiency letter draft,” “substantial equivalence matrix,” “RTA checklist”)?
-19. Should the app support multi-artifact lineage visualization (Input → A → B → Skill.md) as a clickable graph, not just via dashboard tables?
-20. Are there organization-specific disclaimers, document headers/footers, or controlled terminology rules that must be injected into all generated outputs (A/B/SKILL.md) automatically?
