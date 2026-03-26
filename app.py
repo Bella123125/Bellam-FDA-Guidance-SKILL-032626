@@ -1289,6 +1289,9 @@ with tab_builder:
                 )
                 st.session_state["k510_output_A_raw"] = out
                 st.session_state["k510_output_A_effective"] = out
+                st.session_state["k510_output_A_effective__md_widget"] = out
+                st.session_state["k510_output_A_effective__txt_widget"] = out
+                st.rerun()
                 save_artifact("510k_organized_doc_A.md", out, meta={"type": "510k_output_A", "model": model_A})
                 attach_artifact_to_run(st.session_state["runs"][-1]["run_id"], "510k_organized_doc_A.md")
                 st.success("Generated Output A.")
