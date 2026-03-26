@@ -997,53 +997,34 @@ wow_indicator()
 # -----------------------------
 # Shared UI Helpers
 # -----------------------------
-def artifact_editor(
-    title: str,
-    raw_key: str,
-    effective_key: str,
-    expected_tables: int,
-    expected_entities: int,
-    min_words: int,
-    max_words: int,
-    module: str,
-) -> None:
-    """
-    A standardized editor: shows constraint panel, markdown/text tabs, and saves effective output.
-    """
-    raw = st.session_state.get(raw_key, "") or ""
-    effective = st.session_state.get(effective_key, "") or raw
-
+def artifact_editor(title: str, raw_key: str, effective_key: str) -> None:
     st.markdown(f"### {title}")
 
-    # Constraint panel
-    with st.expander(t("constraint_panel"), expanded=True):
-        summ = constraint_summary(effective)
-        warns = make_constraint_warnings(effective, expected_tables, expected_entities, min_words, max_words)
-
-        cols = st.columns(4)
-        cols[0].metric(t("tables_count"), summ["tables"])
-        cols[1].metric(t("entities_count"), summ["entities"])
-        cols[2].metric(t("word_estimate"), summ["words_est"])
-        cols[3].metric(t("char_count"), summ["chars"])
-
-        if warns:
-            st.warning("\n".join(warns))
-            st.info(t("regenerate_hint") + ": Try increasing max_tokens, lowering temperature, and explicitly restating the EXACT table/entity counts in your prompt.")
-            log_event(module, "warn", "constraint_warning", " | ".join(warns), extra={"summary": summ})
+    raw = st.session_state.get(raw_key, "") or ""
+    effective = st.session_state.get(effective_key, "") or raw
+    st.session_state[effective_key] = effective
 
     tab_md, tab_txt = st.tabs([t("markdown_view"), t("text_view")])
+
     with tab_md:
         st.caption(t("edit_output"))
-        effective_new = st.text_area("Markdown", value=effective, height=420, key=f"{effective_key}_md")
-        st.session_state[effective_key] = effective_new
-        # Render preview (best-effort)
-        st.markdown("<div class='wow-divider'></div>", unsafe_allow_html=True)
+        st.session_state[effective_key] = st.text_area(
+            "Markdown",
+            value=st.session_state[effective_key],
+            height=420,
+            key=f"{effective_key}_md",
+        )
         st.markdown("**Preview**")
-        st.markdown(effective_new, unsafe_allow_html=True)
+        st.markdown(st.session_state[effective_key], unsafe_allow_html=True)
+
     with tab_txt:
         st.caption(t("edit_output"))
-        txt_new = st.text_area("Text", value=effective, height=420, key=f"{effective_key}_txt")
-        st.session_state[effective_key] = txt_new
+        st.session_state[effective_key] = st.text_area(
+            "Text",
+            value=st.session_state[effective_key],
+            height=420,
+            key=f"{effective_key}_txt",
+        )
 
 
 def download_buttons(label_prefix: str, content: str, filename_base: str) -> None:
@@ -1317,11 +1298,6 @@ with tab_builder:
         title=t("organized_doc"),
         raw_key="k510_output_A_raw",
         effective_key="k510_output_A_effective",
-        expected_tables=5,
-        expected_entities=20,
-        min_words=2000,
-        max_words=3000,
-        module="510k",
     )
     download_buttons(t("download"), st.session_state.get("k510_output_A_effective", ""), "510k_organized_doc_A")
 
@@ -1436,11 +1412,6 @@ with tab_builder:
         title=t("review_guidance"),
         raw_key="k510_output_B_raw",
         effective_key="k510_output_B_effective",
-        expected_tables=5,
-        expected_entities=20,
-        min_words=3000,
-        max_words=4000,
-        module="510k",
     )
     download_buttons(t("download"), st.session_state.get("k510_output_B_effective", ""), "510k_review_guidance_B")
 
