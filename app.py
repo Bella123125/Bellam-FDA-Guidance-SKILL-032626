@@ -1002,29 +1002,31 @@ def artifact_editor(title: str, raw_key: str, effective_key: str) -> None:
 
     raw = st.session_state.get(raw_key, "") or ""
     effective = st.session_state.get(effective_key, "") or raw
-    st.session_state[effective_key] = effective
+
+    # Two widget states (do NOT write both tabs into the same key on every rerun)
+    md_widget_key = f"{effective_key}__md_widget"
+    txt_widget_key = f"{effective_key}__txt_widget"
+
+    # Initialize widgets only if not present (prevents old empty widget values from overriding)
+    if md_widget_key not in st.session_state:
+        st.session_state[md_widget_key] = effective
+    if txt_widget_key not in st.session_state:
+        st.session_state[txt_widget_key] = effective
 
     tab_md, tab_txt = st.tabs([t("markdown_view"), t("text_view")])
 
     with tab_md:
         st.caption(t("edit_output"))
-        st.session_state[effective_key] = st.text_area(
-            "Markdown",
-            value=st.session_state[effective_key],
-            height=420,
-            key=f"{effective_key}_md",
-        )
+        st.text_area("Markdown", key=md_widget_key, height=420)
         st.markdown("**Preview**")
-        st.markdown(st.session_state[effective_key], unsafe_allow_html=True)
+        st.markdown(st.session_state[md_widget_key], unsafe_allow_html=True)
 
     with tab_txt:
         st.caption(t("edit_output"))
-        st.session_state[effective_key] = st.text_area(
-            "Text",
-            value=st.session_state[effective_key],
-            height=420,
-            key=f"{effective_key}_txt",
-        )
+        st.text_area("Text", key=txt_widget_key, height=420)
+
+    # Decide which one should become the effective output (simple rule: prefer markdown widget)
+    st.session_state[effective_key] = st.session_state[md_widget_key]
 
 
 def download_buttons(label_prefix: str, content: str, filename_base: str) -> None:
